@@ -21,6 +21,89 @@
 //! mathematical object that has captured the imagination of mathematicians, artists, and
 //! computer scientists for decades.
 
+pub mod mandelbrot_img {
+    //! The code plots the Mandelbrot set, a fractal, by calculating the number of iterations it
+    //! takes for a complex number to escape to infinity or stay within a given radius. The main
+    //! function creates an 800x800 image, sets the color of each pixel based on the value returned
+    //! by the mandelbrot function for the corresponding complex number, and saves the image as a
+    //! PNG file. The boundaries of the Mandelbrot set are fractal and intricate, and the plot
+    //! visualizes the behavior of complex sequences defined by simple equations. The Mandelbrot
+    //! set is a beautiful and fascinating mathematical object that has captivated
+    //! mathematicians, artists, and computer scientists for decades.
+    //!
+    //! This code implements the Mandelbrot set calculation and the creation of
+    //! an image representation. The compose function is the main function for creating the image,
+    //! using the mandelbrot function to calculate the color of each pixel. The to_complex_num
+    //! function maps pixel coordinates to complex plane coordinates. The mandelbrot function
+    //! calculates the number of iterations it takes for a complex number to escape to infinity or
+    //! stay within a given radius. The code also includes documentation comments that explain the
+    //! purpose of the code and provide some background on the Mandelbrot set.
+
+    use image::{ImageBuffer, Rgb};
+
+    /// Composes an image of the Mandelbrot set with a specified `width`, `height`, and
+    /// `iterations`.
+    ///
+    /// # Examples
+    /// ```
+    /// use image::RgbImage;
+    /// use image_mandelbrot::image_mandelbrot::compose;
+    ///
+    /// let image = compose(800, 800, 1000);
+    /// assert_eq!(image.width(), 800);
+    /// assert_eq!(image.height(), 800);
+    /// ```
+    pub fn compose(width: u32, height: u32, iterations: u32) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
+        let mut image = ImageBuffer::new(width, height);
+        for (x, y, pixel) in image.enumerate_pixels_mut() {
+            let c = to_complex_num(x, y, width, height);
+            let i = mandelbrot(c, iterations);
+            *pixel = Rgb([i as u8, i as u8, i as u8]);
+        }
+        image
+    }
+
+    /// Maps pixel coordinates to complex plane coordinates.
+    ///
+    /// # Examples
+    /// ```
+    /// use image_mandelbrot::image_mandelbrot::to_complex_num;
+    ///
+    /// let c = to_complex_num(100, 200, 800, 800);
+    /// assert_eq!(c, (-0.375, -0.375));
+    /// ```
+    pub(crate) fn to_complex_num(x: u32, y: u32, width: u32, height: u32) -> (f64, f64) {
+        ((x as f64 / width as f64 * 3.5 - 2.5), (y as f64 / height as f64 * 2.0 - 1.0))
+    }
+
+    /// Calculates the number of iterations it takes for a complex number to escape to infinity
+    /// or stay within a given radius.
+    ///
+    /// # Examples
+    /// ```
+    /// use image_mandelbrot::image_mandelbrot::mandelbrot;
+    ///
+    /// let i = mandelbrot((0.0, 0.0), 100);
+    /// assert_eq!(i, 100);
+    /// ```
+    pub fn mandelbrot(c: (f64, f64), iterations: u32) -> u32 {
+        let (cx, cy) = c;
+        let mut x = 0.0;
+        let mut y = 0.0;
+        let mut i = 0;
+        while i < iterations {
+            let x_temp = x * x - y * y + cx;
+            y = 2.0 * x * y + cy;
+            x = x_temp;
+            if x * x + y * y > 4.0 {
+                break;
+            }
+            i += 1;
+        }
+        i
+    }
+}
+
 pub mod image_mandelbrot {
     use image::{ImageBuffer, Rgb};
 
@@ -39,22 +122,6 @@ pub mod image_mandelbrot {
         ((x as f64 / width as f64 * 3.5 - 2.5), (y as f64 / height as f64 * 2.0 - 1.0))
     }
 
-    // The code plots the Mandelbrot set, a fractal, by calculating the number of iterations it
-    // takes for a complex number to escape to infinity or stay within a given radius. The main
-    // function creates an 800x800 image, sets the color of each pixel based on the value returned
-    // by the mandelbrot function for the corresponding complex number, and saves the image as a PNG
-    // file. The boundaries of the Mandelbrot set are fractal and intricate, and the plot visualizes
-    // the behavior of complex sequences defined by simple equations. The Mandelbrot set is a
-    // beautiful and fascinating mathematical object that has captivated mathematicians, artists,
-    // and computer scientists for decades.
-    //
-    // This code implements the Mandelbrot set calculation and the creation of
-    // an image representation. The compose function is the main function for creating the image,
-    // using the mandelbrot function to calculate the color of each pixel. The to_complex_num
-    // function maps pixel coordinates to complex plane coordinates. The mandelbrot function
-    // calculates the number of iterations it takes for a complex number to escape to infinity or
-    // stay within a given radius. The code also includes documentation comments that explain the
-    // purpose of the code and provide some background on the Mandelbrot set.
     pub fn mandelbrot(c: (f64, f64), iterations: u32) -> u32 {
         let (cx, cy) = c;
         let mut x = 0.0;
@@ -74,6 +141,28 @@ pub mod image_mandelbrot {
 }
 
 pub mod ascii_mandelbrot {
+    //! This module, named ascii_mandelbrot, generates an ASCII art representation of the Mandelbrot
+    //! set.
+    //!
+    //! # Constants:
+    //!
+    //! * WIDTH: width of the ASCII art representation
+    //! * HEIGHT: height of the ASCII art representation
+    //! * ITERATIONS: counts to iterate to calculate the value of a point in the Mandelbrot set
+    //! * ESCAPE_RADIUS: the escape radius used to determine if a point is in the Mandelbrot set
+    //!
+    //! # Functions:
+    //!
+    //! * to_ascii_char: Converts the value of a point in the Mandelbrot set to an ASCII character.
+    //!   The ASCII character represents the intensity of the Mandelbrot set value.
+    //! * to_complex_num: Converts a pixel's (x, y) coordinates to a complex number.
+    //! * mandelbrot: Calculates the value of a point in the Mandelbrot set given a complex number.
+    //! * calculate_pixel_index: Calculates the pixel index from the x and y coordinate of a pixel.
+    //! * collect_ascii: Calculates the ASCII representation of the Mandelbrot set and returns it as
+    //!   a HashMap where the keys are the pixel indices and the values are the corresponding ASCII
+    //!   characters.
+    //! * print_ascii: Prints the ASCII representation of the Mandelbrot set. The representation is
+    //!   passed as a HashMap.
 
     use std::collections::HashMap;
 
