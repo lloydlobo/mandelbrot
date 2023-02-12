@@ -1,7 +1,7 @@
-use std::{collections::HashMap, env, path::Path, sync::RwLock};
+use std::{collections::HashMap, env, sync::RwLock};
 
 use clap::{command, Arg, ArgMatches};
-use config::{Config, ConfigError};
+use config::{Config};
 use console::Style;
 use indicatif::{ProgressBar, ProgressStyle};
 use log::info;
