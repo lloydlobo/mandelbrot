@@ -15,9 +15,9 @@ fn main() {
                 .unwrap()
                 .progress_chars("##-"),
         );
-        let image = mandelbrot::ascii_mandelbrot::collect_ascii();
+        let image = mandelbrot::mandelbrot_ascii::collect_ascii();
         progress_bar.finish();
-        mandelbrot::ascii_mandelbrot::print_ascii(image);
+        mandelbrot::mandelbrot_ascii::print_ascii(image);
     };
 
     let progress_bar = ProgressBar::new(WIDTH as u64 * HEIGHT as u64);
@@ -27,7 +27,7 @@ fn main() {
             .unwrap()
             .progress_chars("##-"),
     );
-    if let Err(e) = mandelbrot::image_mandelbrot::compose(WIDTH, HEIGHT, ITERATIONS).save(PATH) {
+    if let Err(e) = mandelbrot::mandelbrot_img::compose(WIDTH, HEIGHT, ITERATIONS).save(PATH) {
         eprintln!("{}", e);
         std::process::exit(1);
     }
