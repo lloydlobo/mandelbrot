@@ -153,7 +153,7 @@ pub mod ascii {
     }
 
     pub fn print_mandelbrot_ascii_art() {
-        let image_area = WIDTH * HEIGHT;
+        let _image_area = WIDTH * HEIGHT;
         let mut image = HashMap::new();
 
         for x in 0..WIDTH {
@@ -240,7 +240,6 @@ mod tests {
 
         // Enumerate the pixels in the image area using an enumerated iterator
         (0..image_area)
-            .into_iter()
             .enumerate()
             .for_each(|(pixel_index, pixel_value)| {
                 // Calculate the x and y coordinate of the pixel
