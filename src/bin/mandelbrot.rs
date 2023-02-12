@@ -1,4 +1,7 @@
+use std::{env};
+
 use clap::{command, Arg, ArgMatches};
+use config::Config;
 use console::Style;
 use indicatif::{ProgressBar, ProgressStyle};
 use log::info;
@@ -7,6 +10,7 @@ use pretty_env_logger::env_logger::Builder;
 const ITERATIONS: u32 = 255;
 const WIDTH: u32 = 800;
 const HEIGHT: u32 = 800;
+const DEFAULT_SETTINGS_FILE: &str = "settings.toml";
 const PATH: &str = "mandelbrot.png";
 
 fn main() {
@@ -19,6 +23,8 @@ fn main() {
 }
 
 fn try_main() -> anyhow::Result<()> {
+    let settings = build_config_settings(DEFAULT_SETTINGS_FILE)?;
+    println!("{:?}", settings);
     let matches: ArgMatches = command!()
         .arg(
             Arg::new("ascii")
@@ -83,4 +89,16 @@ fn style_progress_bar(pb: &ProgressBar) {
             .unwrap()
             .progress_chars("##-"),
     );
+}
+
+// #[derive(Debug, Serialize,Deserialize)]
+// pub struct ConfigManger(config::Config);
+fn build_config_settings(path: &str) -> Result<Config, config::ConfigError> {
+    let mut curr_path = env::current_dir().unwrap();
+    curr_path.push(path);
+    Config::builder()
+        // Add in `./settings.toml`
+        .add_source(config::File::with_name(&curr_path.to_string_lossy()))
+        .add_source(config::Environment::with_prefix("APP"))
+        .build()
 }
