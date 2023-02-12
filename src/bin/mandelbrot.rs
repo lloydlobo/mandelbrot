@@ -1,4 +1,4 @@
-use clap::{arg, command, Arg, ArgAction, ArgMatches, Command};
+use clap::{command, Arg, ArgMatches};
 use console::Style;
 use indicatif::{ProgressBar, ProgressStyle};
 use log::info;
@@ -10,7 +10,7 @@ const HEIGHT: u32 = 800;
 const PATH: &str = "mandelbrot.png";
 
 fn main() {
-    Builder::from_default_env().format_timestamp(None).init();
+    Builder::from_default_env().format_timestamp(None).filter_level(log::LevelFilter::Info).init();
 
     if let Err(e) = try_main() {
         eprintln!("{}", e);
@@ -41,34 +41,37 @@ fn try_main() -> anyhow::Result<()> {
         )
         .get_matches();
 
-    if let Some(ascii) = matches.get_one::<String>("ascii") {
-        dbg!(ascii);
-        info!("Rendering image Mandelbrot set as {}", Style::new().cyan().apply_to("ASCII"));
+    if let Some(_ascii) = matches.get_one::<String>("ascii") {
+        info!("Rendering image Mandelbrot set as {}", Style::new().bold().apply_to("ASCII"));
         let pb = ProgressBar::new(WIDTH as u64 * HEIGHT as u64);
         style_progress_bar(&pb);
         let image = mandelbrot::mandelbrot_ascii::collect_ascii();
         pb.finish();
-        mandelbrot::mandelbrot_ascii::print_ascii(image.clone());
+        mandelbrot::mandelbrot_ascii::print_ascii(image);
     }
 
-    info!(
-        "Rendering image Mandelbrot set as {}",
-        Style::new().cyan().apply_to("ASCII and saving to file")
-    );
-    let pb = ProgressBar::new(WIDTH as u64 * HEIGHT as u64);
-    style_progress_bar(&pb);
-    let image = mandelbrot::mandelbrot_ascii::collect_ascii();
-    mandelbrot::mandelbrot_ascii::write_ascii_to_file(image);
-    pb.finish_with_message("Wrote ascii to file");
+    if let Some(_text) = matches.get_one::<String>("text") {
+        info!(
+            "Rendering image Mandelbrot set as {} and saving to file",
+            Style::new().bold().apply_to("ASCII")
+        );
+        let pb = ProgressBar::new(WIDTH as u64 * HEIGHT as u64);
+        style_progress_bar(&pb);
+        let image = mandelbrot::mandelbrot_ascii::collect_ascii();
+        mandelbrot::mandelbrot_ascii::write_ascii_to_file(image);
+        pb.finish_with_message("Wrote ascii to file");
+    }
 
-    info!(
-        "Rendering image Mandelbrot set as {}",
-        Style::new().cyan().apply_to("image and saving to file")
-    );
-    let pb = ProgressBar::new(WIDTH as u64 * HEIGHT as u64);
-    style_progress_bar(&pb);
-    mandelbrot::mandelbrot_img::compose(WIDTH, HEIGHT, ITERATIONS).save(PATH)?;
-    pb.finish_with_message("Saved image to file");
+    if let Some(_image) = matches.get_one::<String>("image") {
+        info!(
+            "Rendering image Mandelbrot set as {} and saving to file",
+            Style::new().bold().apply_to("image")
+        );
+        let pb = ProgressBar::new(WIDTH as u64 * HEIGHT as u64);
+        style_progress_bar(&pb);
+        mandelbrot::mandelbrot_img::compose(WIDTH, HEIGHT, ITERATIONS).save(PATH)?;
+        pb.finish_with_message("Saved image to file");
+    }
 
     Ok(())
 }
