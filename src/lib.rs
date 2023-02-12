@@ -1,86 +1,79 @@
-//
-//
+//! The Mandelbrot set is a set of complex numbers for which the corresponding sequence, defined by
+//! the iterative equation z(n+1) = z(n)^2 + c, remains bounded. The sequence is defined by the
+//! complex number c and an initial value of z(0) = 0. The equation generates a sequence of complex
+//! numbers, and if the magnitude of the sequence stays within a certain bound (usually 2), then the
+//! number c is considered to be in the Mandelbrot set. If the magnitude of the sequence exceeds the
+//! bound, then c is considered to be outside the Mandelbrot set.
+//!
+//! In the plot of the Mandelbrot set, each complex number c is represented by a pixel on the
+//! screen, and the color of the pixel is determined by the number of iterations it takes for
+//! the magnitude of the sequence to exceed the bound. If the number of iterations is small, the
+//! pixel is colored black. If the number of iterations is large, the pixel is colored white. If
+//! the number of iterations is intermediate, the pixel is colored based on a color map that
+//! maps the number of iterations to a color.
+//!
+//! The Mandelbrot set is a fractal, meaning that it exhibits self-similar patterns at different
+//! scales. The boundaries of the Mandelbrot set are fractal in nature and have a complex,
+//! intricate structure that can be explored by zooming into different regions of the set.
+//! The principle behind the Mandelbrot set is to visualize the behavior of complex sequences
+//! defined by simple mathematical equations, and to explore the intricate structure of the
+//! boundaries of these sequences. The Mandelbrot set is a beautiful and fascinating
+//! mathematical object that has captured the imagination of mathematicians, artists, and
+//! computer scientists for decades.
 
-//
-//
-//
-//
-//
-//
-//
-//
-use image::{ImageBuffer, Rgb};
+pub mod image_mandelbrot {
+    use image::{ImageBuffer, Rgb};
 
-//
-
-pub fn compose(width: u32, height: u32, iterations: u32) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
-    let mut image = ImageBuffer::new(width, height);
-    for (x, y, pixel) in image.enumerate_pixels_mut() {
-        let c = to_complex_num(x, y, width, height);
-        let i = mandelbrot(c, iterations);
-        *pixel = Rgb([i as u8, i as u8, i as u8]);
-    }
-    image
-}
-
-/// The function to_complex_num maps pixel coordinates to complex plane coordinates,
-fn to_complex_num(x: u32, y: u32, width: u32, height: u32) -> (f64, f64) {
-    ((x as f64 / width as f64 * 3.5 - 2.5), (y as f64 / height as f64 * 2.0 - 1.0))
-}
-
-/// The given code is for plotting the Mandelbrot set, a famous fractal.
-/// `mandelbrot` calculates the number of iterations until a complex number
-/// escapes to infinity or stays within a given radius.
-///
-/// In this example, the mandelbrot function takes a complex number c as input and returns the
-/// number of iterations it takes for the magnitude of the iterated sequence to exceed 2. The main
-/// function creates an 800x800 image and sets the color of each pixel based on the value returned
-/// by the mandelbrot function for the corresponding complex number. Finally, the image is saved as
-/// a PNG file.
-///
-/// The Mandelbrot set is a set of complex numbers for which the corresponding sequence, defined by
-/// the iterative equation z(n+1) = z(n)^2 + c, remains bounded. The sequence is defined by the
-/// complex number c and an initial value of z(0) = 0.
-///
-/// The equation generates a sequence of complex numbers, and if the magnitude of the sequence stays
-/// within a certain bound (usually 2), then the number c is considered to be in the Mandelbrot set.
-/// If the magnitude of the sequence exceeds the bound, then c is considered to be outside the
-/// Mandelbrot set.
-///
-/// In the plot of the Mandelbrot set, each complex number c is represented by a pixel on the
-/// screen, and the color of the pixel is determined by the number of iterations it takes for the
-/// magnitude of the sequence to exceed the bound. If the number of iterations is small, the pixel
-/// is colored black. If the number of iterations is large, the pixel is colored white. If the
-/// number of iterations is intermediate, the pixel is colored based on a color map that maps the
-/// number of iterations to a color.
-///
-/// The Mandelbrot set is a fractal, meaning that it exhibits self-similar patterns at different
-/// scales. The boundaries of the Mandelbrot set are fractal in nature and have a complex, intricate
-/// structure that can be explored by zooming into different regions of the set.
-///
-/// The principle behind the Mandelbrot set is to visualize the behavior of complex sequences
-/// defined by simple mathematical equations, and to explore the intricate structure of the
-/// boundaries of these sequences. The Mandelbrot set is a beautiful and fascinating mathematical
-/// object that has captured the imagination of mathematicians, artists, and computer scientists for
-/// decades.
-pub fn mandelbrot(c: (f64, f64), iterations: u32) -> u32 {
-    let (cx, cy) = c;
-    let mut x = 0.0;
-    let mut y = 0.0;
-    let mut i = 0;
-    while i < iterations {
-        let x_temp = x * x - y * y + cx;
-        y = 2.0 * x * y + cy;
-        x = x_temp;
-        if x * x + y * y > 4.0 {
-            break;
+    pub fn compose(width: u32, height: u32, iterations: u32) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
+        let mut image = ImageBuffer::new(width, height);
+        for (x, y, pixel) in image.enumerate_pixels_mut() {
+            let c = to_complex_num(x, y, width, height);
+            let i = mandelbrot(c, iterations);
+            *pixel = Rgb([i as u8, i as u8, i as u8]);
         }
-        i += 1;
+        image
     }
-    i
+
+    /// The function to_complex_num maps pixel coordinates to complex plane coordinates,
+    pub(crate) fn to_complex_num(x: u32, y: u32, width: u32, height: u32) -> (f64, f64) {
+        ((x as f64 / width as f64 * 3.5 - 2.5), (y as f64 / height as f64 * 2.0 - 1.0))
+    }
+
+    // The code plots the Mandelbrot set, a fractal, by calculating the number of iterations it
+    // takes for a complex number to escape to infinity or stay within a given radius. The main
+    // function creates an 800x800 image, sets the color of each pixel based on the value returned
+    // by the mandelbrot function for the corresponding complex number, and saves the image as a PNG
+    // file. The boundaries of the Mandelbrot set are fractal and intricate, and the plot visualizes
+    // the behavior of complex sequences defined by simple equations. The Mandelbrot set is a
+    // beautiful and fascinating mathematical object that has captivated mathematicians, artists,
+    // and computer scientists for decades.
+    //
+    // This code implements the Mandelbrot set calculation and the creation of
+    // an image representation. The compose function is the main function for creating the image,
+    // using the mandelbrot function to calculate the color of each pixel. The to_complex_num
+    // function maps pixel coordinates to complex plane coordinates. The mandelbrot function
+    // calculates the number of iterations it takes for a complex number to escape to infinity or
+    // stay within a given radius. The code also includes documentation comments that explain the
+    // purpose of the code and provide some background on the Mandelbrot set.
+    pub fn mandelbrot(c: (f64, f64), iterations: u32) -> u32 {
+        let (cx, cy) = c;
+        let mut x = 0.0;
+        let mut y = 0.0;
+        let mut i = 0;
+        while i < iterations {
+            let x_temp = x * x - y * y + cx;
+            y = 2.0 * x * y + cy;
+            x = x_temp;
+            if x * x + y * y > 4.0 {
+                break;
+            }
+            i += 1;
+        }
+        i
+    }
 }
 
-pub mod ascii {
+pub mod ascii_mandelbrot {
 
     use std::collections::HashMap;
 
@@ -166,6 +159,7 @@ mod tests {
     use std::collections::HashMap;
 
     use super::*;
+    use crate::image_mandelbrot::mandelbrot;
 
     const WIDTH: u32 = 800;
     const HEIGHT: u32 = 800;
@@ -182,7 +176,7 @@ mod tests {
 
     #[test]
     fn test_mandelbrot_0() {
-        let c = to_complex_num(1, 1, 800, 800);
+        let c = image_mandelbrot::to_complex_num(1, 1, 800, 800);
         let iterations = 255;
         assert_eq!(mandelbrot(c, iterations), 0);
     }
@@ -193,8 +187,8 @@ mod tests {
         const ITERATIONS: u32 = 255;
         for x in 0..WIDTH {
             for y in 0..HEIGHT {
-                let c = to_complex_num(x, y, WIDTH, HEIGHT);
-                let got = mandelbrot(c, ITERATIONS);
+                let c = image_mandelbrot::to_complex_num(x, y, WIDTH, HEIGHT);
+                let got = image_mandelbrot::mandelbrot(c, ITERATIONS);
                 assert!(got <= ITERATIONS);
             }
         }
@@ -207,7 +201,7 @@ mod tests {
         for x in 0..WIDTH {
             for y in 0..HEIGHT {
                 let (cx1, cy1) = (x, y);
-                let c = to_complex_num(cx1, cy1, width, height);
+                let c = image_mandelbrot::to_complex_num(cx1, cy1, width, height);
                 let (cx2, cy2) = from_complex_num(c, width, height);
                 assert_eq!((cx1, cy1), (cx2, cy2));
             }
@@ -251,7 +245,7 @@ mod tests {
 
             let (cx1, cy1) = (x, y);
             // Convert the x and y coordinate to a complex number
-            let c = to_complex_num(cx1, cy1, width, height);
+            let c = image_mandelbrot::to_complex_num(cx1, cy1, width, height);
             // Convert the complex number back to its corresponding x and y coordinate
             let (cx2, cy2) = from_complex_num(c, width, height);
 
@@ -278,7 +272,7 @@ mod tests {
 
                 let (cx1, cy1) = (x, y);
                 // Convert the x and y coordinate to a complex number
-                let c = to_complex_num(cx1, cy1, width, height);
+                let c = image_mandelbrot::to_complex_num(cx1, cy1, width, height);
                 // Convert the complex number back to its corresponding x and y coordinate
                 let (cx2, cy2) = from_complex_num(c, width, height);
 
