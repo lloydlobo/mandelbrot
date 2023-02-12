@@ -7,18 +7,26 @@ const HEIGHT: u32 = 800;
 const PATH: &str = "mandelbrot.png";
 
 fn main() {
-    {
-        let progress_bar = ProgressBar::new(WIDTH as u64 * HEIGHT as u64);
-        progress_bar.set_style(
-            ProgressStyle::default_bar()
-                .template("[{elapsed_precise}] [{bar:40.cyan/blue}] {percent}%")
-                .unwrap()
-                .progress_chars("##-"),
-        );
-        let image = mandelbrot::mandelbrot_ascii::collect_ascii();
-        progress_bar.finish();
-        mandelbrot::mandelbrot_ascii::print_ascii(image);
-    };
+    let progress_bar = ProgressBar::new(WIDTH as u64 * HEIGHT as u64);
+    progress_bar.set_style(
+        ProgressStyle::default_bar()
+            .template("[{elapsed_precise}] [{bar:40.cyan/blue}] {percent}%")
+            .unwrap()
+            .progress_chars("##-"),
+    );
+    let image = mandelbrot::mandelbrot_ascii::collect_ascii();
+    progress_bar.finish();
+    mandelbrot::mandelbrot_ascii::print_ascii(image.clone());
+
+    let progress_bar = ProgressBar::new(WIDTH as u64 * HEIGHT as u64);
+    progress_bar.set_style(
+        ProgressStyle::default_bar()
+            .template("[{elapsed_precise}] [{bar:40.cyan/blue}] {percent}%")
+            .unwrap()
+            .progress_chars("##-"),
+    );
+    mandelbrot::mandelbrot_ascii::write_ascii_to_file(image);
+    progress_bar.finish_with_message("Wrote ascii to file");
 
     let progress_bar = ProgressBar::new(WIDTH as u64 * HEIGHT as u64);
     progress_bar.set_style(
@@ -31,5 +39,5 @@ fn main() {
         eprintln!("{}", e);
         std::process::exit(1);
     }
-    progress_bar.finish();
+    progress_bar.finish_with_message("Saved image to file");
 }
