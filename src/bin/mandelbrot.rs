@@ -1,7 +1,7 @@
 use std::{collections::HashMap, env, sync::RwLock};
 
 use clap::{command, Arg, ArgMatches};
-use config::Config;
+use config::{builder::DefaultState, Config, ConfigBuilder};
 use console::Style;
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{info, LevelFilter::Info};
@@ -14,20 +14,8 @@ const HEIGHT: u32 = 800;
 const DEFAULT_SETTINGS_FILE: &str = "settings.toml";
 const DEFAULT_IMAGE_PATH: &str = "mandelbrot.png";
 
-static GLOBAL_SETTINGS: Lazy<RwLock<Config>> = Lazy::new(|| {
-    let mut curr_path = env::current_dir().unwrap();
-    curr_path.push(DEFAULT_SETTINGS_FILE);
-    RwLock::new(
-        // Add in `./settings.toml`
-        // Add in settings from the environment (with a prefix of APP)
-        // Eg.. `APP_DEBUG=1 ./target/app` would set the `debug` key
-        Config::builder()
-            .add_source(config::File::with_name(&curr_path.to_string_lossy()))
-            .add_source(config::Environment::with_prefix("APP"))
-            .build()
-            .unwrap(),
-    )
-});
+static CONFIG_BUILDER: Lazy<RwLock<ConfigBuilder<DefaultState>>> =
+    Lazy::new(|| RwLock::new(Config::builder()));
 
 fn main() {
     Builder::from_default_env().format_timestamp(None).filter_level(Info).init();
@@ -39,9 +27,22 @@ fn main() {
 }
 
 fn try_main() -> anyhow::Result<()> {
-    let settings: Config = GLOBAL_SETTINGS.read().unwrap().clone();
-    let settings: HashMap<String, String> = settings.try_deserialize()?;
-    println!("{settings:?}");
+    let mut curr_path = env::current_dir().unwrap();
+    curr_path.push(DEFAULT_SETTINGS_FILE);
+    // TODO: Directly mutate `CONFIG_BUILDER` without assigning it.
+    let settings_builder: ConfigBuilder<DefaultState> = CONFIG_BUILDER
+        .write()
+        .unwrap()
+        .clone()
+        .set_default("verbose", "1")? // This is not in the settings file.
+        .add_source(config::File::with_name(&curr_path.to_string_lossy()))
+        .add_source(config::Environment::with_prefix("APP"));
+    // Does not take ownership of `ConfigBuilder` to allow later reuse.
+    let settings_new: Config = settings_builder.build_cloned()?;
+    // {"key": "189rjfadoisfj8923fjio", "verbose": "1", "priority": "32", "debug": "false"}
+    let _map_new = settings_new.try_deserialize::<HashMap<String, String>>()?;
+
+    // Parse clap args.
     let matches: ArgMatches = command!()
         .arg(
             Arg::new("ascii")
