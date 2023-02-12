@@ -1,7 +1,17 @@
 # mandlebrot
 
+## Usage
+
 ```sh
 $ cargo run mandelbrot
+```
+### Output image
+
+![mandelbrot](https://github.com/lloydlobo/mandelbrot/blob/master/mandelbrot.png)
+
+### Output ASCII art
+
+```sh
 ....................................................**:*::......................
 ...................................................***::***.....................
 ..................................................***::8:**.....................
