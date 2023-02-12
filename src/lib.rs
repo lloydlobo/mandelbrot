@@ -47,7 +47,7 @@ pub mod mandelbrot_img {
     /// # Examples
     /// ```
     /// use image::RgbImage;
-    /// use image_mandelbrot::image_mandelbrot::compose;
+    /// use mandelbrot::mandelbrot_img::compose;
     ///
     /// let image = compose(800, 800, 1000);
     /// assert_eq!(image.width(), 800);
@@ -67,12 +67,12 @@ pub mod mandelbrot_img {
     ///
     /// # Examples
     /// ```
-    /// use image_mandelbrot::image_mandelbrot::to_complex_num;
+    /// use mandelbrot::mandelbrot_img::to_complex_num;
     ///
     /// let c = to_complex_num(100, 200, 800, 800);
-    /// assert_eq!(c, (-0.375, -0.375));
+    /// assert_eq!(c, (-2.0625, -0.5));
     /// ```
-    pub(crate) fn to_complex_num(x: u32, y: u32, width: u32, height: u32) -> (f64, f64) {
+    pub fn to_complex_num(x: u32, y: u32, width: u32, height: u32) -> (f64, f64) {
         ((x as f64 / width as f64 * 3.5 - 2.5), (y as f64 / height as f64 * 2.0 - 1.0))
     }
 
@@ -81,7 +81,7 @@ pub mod mandelbrot_img {
     ///
     /// # Examples
     /// ```
-    /// use image_mandelbrot::image_mandelbrot::mandelbrot;
+    /// use mandelbrot::mandelbrot_img::mandelbrot;
     ///
     /// let i = mandelbrot((0.0, 0.0), 100);
     /// assert_eq!(i, 100);
