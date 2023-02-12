@@ -1,10 +1,10 @@
 use std::{collections::HashMap, env, sync::RwLock};
 
 use clap::{command, Arg, ArgMatches};
-use config::{Config};
+use config::Config;
 use console::Style;
 use indicatif::{ProgressBar, ProgressStyle};
-use log::info;
+use log::{info, LevelFilter::Info};
 use once_cell::sync::Lazy;
 use pretty_env_logger::env_logger::Builder;
 
@@ -30,7 +30,7 @@ static GLOBAL_SETTINGS: Lazy<RwLock<Config>> = Lazy::new(|| {
 });
 
 fn main() {
-    Builder::from_default_env().format_timestamp(None).filter_level(log::LevelFilter::Info).init();
+    Builder::from_default_env().format_timestamp(None).filter_level(Info).init();
 
     if let Err(e) = try_main() {
         eprintln!("{}", e);
